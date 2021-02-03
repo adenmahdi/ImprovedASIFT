@@ -1,5 +1,4 @@
 By, Silver Lewis #101013172 & Mahdi Aden #100996245
-GitHub: https://github.com/adenmahdi/ImprovedASIFT
 
 ### Summary: 
 
