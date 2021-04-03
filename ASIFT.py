@@ -76,7 +76,7 @@ def image_call(x,y, img1, img2, img1_1, img2_1):
     equ = E2P.Equirectangular(x)
     
     amountOfImages = 3
-    increment = 360/(amountOfImages)
+    increment = 360/(amountOfImages+1)
 
     for i in range(amountOfImages):
         img1_1= equ.GetPerspective(60,i*increment, 0, img1.shape[1]/(amountOfImages-1), img1.shape[0])
