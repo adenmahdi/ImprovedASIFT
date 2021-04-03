@@ -18,7 +18,7 @@ def sift_alg(img1, img2, outImg, kp1, kp2):
 
 	return matches
 
-define ASIFT(img1, img2, kp1, kp2):
+def ASIFT(img1, img2, kp1, kp2):
 	num_matches=0
 	for x in range(-5,5,0.1):
 		z=x/(2*numpy.pi)
@@ -73,13 +73,18 @@ def findPoints(image1, image2):
 #    cv2.destroyAllWindows()
 
 def image_call(x,y, img1, img2, img1_1, img2_1):
-	equ = E2P.Equirectangular(x)
-	for(i in range(1,5)):
-		img1_1= equ.GetPerspective(60,i*90, 0, img1.shape[1]/4, img1.shape[0])
-	
-	equ = E2P.Equirectangular(y)
-	for(i in range(1,5)):
-		img2_1= equ.GetPerspective(60,i*90, 0, img2.shape[1]/4, img2.shape[0])
+    equ = E2P.Equirectangular(x)
+    
+    amountOfImages = 3
+    increment = 360/(amountOfImages)
+
+    for i in range(amountOfImages):
+        img1_1= equ.GetPerspective(60,i*increment, 0, img1.shape[1]/(amountOfImages-1), img1.shape[0])
+    
+    equ = E2P.Equirectangular(y)
+    
+    for i in range(amountOfImages):
+        img2_1= equ.GetPerspective(60,i*increment, 0, img2.shape[1]/(amountOfImages-1), img2.shape[0])
 
 print("Image 1: ")
 x=input()
@@ -91,9 +96,9 @@ img2_1=[]
 image_call(x,y,img1, img2, img1_1,img2_1)
 total_matches=[]
 
-for (x in img1_1):
+for x in img1_1:
 	num_matches=0
-	for (y in img2_1):
+	for y in img2_1:
 		matches=ASIFT(x,y, kp1, kp2)
 		if (len(matches)>num_matches):
 			final=matches
