@@ -2,12 +2,13 @@
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+import Equirec2Perspec as E2P
 
-def sift_alg(img1, img2, outImg):
+def sift_alg(img1, img2, outImg, kp1, kp2):
 	detector = cv2.SIFT_create()
 
-	keypoints1, des1 = detector.detectAndCompute(img1, None)
-	keypoints2, des2 = detector.detectAndCompute(img2, None)
+	kp1, des1 = detector.detectAndCompute(img1, None)
+	kp2, des2 = detector.detectAndCompute(img2, None)
 
 	bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)
 
@@ -15,11 +16,9 @@ def sift_alg(img1, img2, outImg):
 
 	matches = sorted(matches, key = lambda x:x.distance)
 
-	outImg=cv.drawMatches(img1, keypoints1, img2, keypoints2, matches)
-
 	return matches
 
-define ASIFT(img1, img2):
+define ASIFT(img1, img2, kp1, kp2):
 	num_matches=0
 	for x in range(-5,5,0.1):
 		z=x/(2*numpy.pi)
@@ -31,12 +30,12 @@ define ASIFT(img1, img2):
 			img1_warp = cv.warpPerspective(img1, A, (img1.shape[1], img1.shape[0]))
 			img2_warp = cv.warpPerspective(img2, B, (img2.shape[1], img2.shape[0]))
 
-			matches=sift_alg(img1_warp, img2_warp, outImg)
+			matches=sift_alg(img1_warp, img2_warp, outImg, kp1, kp2)
 			if (len(matches)>num_matches):
-				final=outImg
+				final=matches
 				num_matches=len(matches)
-
-	cv.imwrite("Output.jpg", final)
+	
+	return matches
 	
 #created my own function to find points
 def findPoints(image1, image2):
@@ -73,6 +72,19 @@ def findPoints(image1, image2):
 #    cv2.waitKey()
 #    cv2.destroyAllWindows()
 
+def image_call(x,y, img1_1, img2_1):
+	equ = E2P.Equirectangular(x)
+	img1_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	img1_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	img1_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	img1_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	
+	equ = E2P.Equirectangular(y)
+	img2_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	img2_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	img2_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	img2_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+
 print("Image 1: ")
 x=input()
 print("Image 2: ")
@@ -80,43 +92,14 @@ y=input()
 img1 = cv2.imread(x,0)
 img1_1=[]
 img2_1=[]
-
-dst = cv2.Mat()
-
-rect = cv2.Rect(0, 0, img1.shape[1]/4, img1.shape[0])
-dst = img1.roi(rect)
-img1_1.add(dst)
-
-rect = cv2.Rect(img1.shape[1]/4, 0, img1.shape[1]/4, img1.shape[0])
-dst = img1.roi(rect)
-img1_1.add(dst)
-
-rect = cv2.Rect(img1.shape[1]/2, 0, img1.shape[1]/4, img1.shape[0])
-dst = img1.roi(rect)
-img1_1.add(dst)
-
-rect = cv2.Rect(3*img1.shape[1]/4, 0, img1.shape[1]/4, img1.shape[0])
-dst = img1.roi(rect)
-img1_1.add(dst)
-
-img2 = cv2.imread(y,0)
-
-rect = cv2.Rect(0, 0, img2.shape[1]/4, img2.shape[0])
-dst = img2.roi(rect)
-img2_1.add(dst)
-
-rect = cv2.Rect(img2.shape[1]/4, 0, img2.shape[1]/4, img2.shape[0])
-dst = img2.roi(rect)
-img2_1.add(dst)
-
-rect = cv2.Rect(img2.shape[1]/2, 0, img2.shape[1]/4, img2.shape[0])
-dst = img2.roi(rect)
-img2_1.add(dst)
-
-rect = cv2.Rect(3*img2.shape[1]/4, 0, img2.shape[1]/4, img2.shape[0])
-dst = img2.roi(rect)
-img2_1.add(dst)
+image_call(x,y,img1_1,img2_1)
+total_matches=[]
 
 for (x in img1_1):
+	num_matches=0
 	for (y in img2_1):
-		ASIFT(x,y)
+		matches=ASIFT(x,y, kp1, kp2)
+		if (len(matches)>num_matches):
+			final=matches
+			num_matches=len(matches)
+	total_matches
