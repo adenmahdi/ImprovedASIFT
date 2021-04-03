@@ -72,18 +72,14 @@ def findPoints(image1, image2):
 #    cv2.waitKey()
 #    cv2.destroyAllWindows()
 
-def image_call(x,y, img1_1, img2_1):
+def image_call(x,y, img1, img2, img1_1, img2_1):
 	equ = E2P.Equirectangular(x)
-	img1_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
-	img1_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
-	img1_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
-	img1_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	for(i in range(1,5)):
+		img1_1= equ.GetPerspective(60,i*90, 0, img1.shape[1]/4, img1.shape[0])
 	
 	equ = E2P.Equirectangular(y)
-	img2_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
-	img2_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
-	img2_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
-	img2_1.add(equ.GetPerspective(60, 0, 0, 720, 1080))
+	for(i in range(1,5)):
+		img2_1= equ.GetPerspective(60,i*90, 0, img2.shape[1]/4, img2.shape[0])
 
 print("Image 1: ")
 x=input()
