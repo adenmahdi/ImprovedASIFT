@@ -43,6 +43,10 @@ x=input()
 print("Image 2: ")
 y=input()
 img1 = cv2.imread(x,0)
+dst = cv2.Mat();
+// You can try more different parameters
+rect = cv2.Rect(100, 100, 200, 200);
+dst = src.roi(rect);
 img1_1, img1_2, img1_3, img1_4 = cv2.split(img1)
 img2 = cv2.imread(y,0)
 img1_1, img1_2, img1_3, img1_4 = cv2.split(img1)
