@@ -37,6 +37,41 @@ define ASIFT(img1, img2):
 				num_matches=len(matches)
 
 	cv.imwrite("Output.jpg", final)
+	
+#created my own function to find points
+def findPoints(image1, image2):
+    gray1 = cv2.cvtColor(np.copy(image1), cv2.COLOR_BGR2GRAY)
+    gray2 = cv2.cvtColor(np.copy(image2), cv2.COLOR_BGR2GRAY)
+
+
+    orb = cv2.ORB_create()#create orb to us in matcher
+    keyPts1, desc1 = orb.detectAndCompute(gray1, None)#get key pts and descriptors 
+    keyPts2, desc2 = orb.detectAndCompute(gray2, None)
+
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)#initialize matcher
+    matches = bf.match(desc1, desc2)#match descriptors
+    sortedMatches = sorted(matches, key = lambda x:x.distance)#sort
+
+    srcPts  = np.float32([keyPts1[m.queryIdx].pt for m in sortedMatches]).reshape(-1,1,2)
+    dstPts  = np.float32([keyPts2[m.trainIdx].pt for m in sortedMatches]).reshape(-1,1,2)#return matched keypoints
+
+    M, mask = cv2.findHomography(srcPts, dstPts, cv2.RANSAC, 5.0)#get homorapghy matrix
+    h, w = image1.shape[:2]#hieght/width of img
+    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+    dst = cv2.perspectiveTransform(pts, M)#perspective transform
+    
+    h, w, x = image2.shape
+    
+    warpped = cv2.warpPerspective(image1, M, (w, h))#warp img to new perspective
+
+    return warpped, dst
+
+#def mergeImages():
+#    leftRight, dst = findPoints(right,left)#gets matching points between right and left
+#    cv2.imshow("Warped",cv2.cvtColor((leftRight),cv2.COLOR_BGR2GRAY))#Shows warped in greyscale
+#    cv2.imshow("Merged",cv2.cvtColor((leftRight+left),cv2.COLOR_BGR2GRAY))#combine images in greyscale
+#    cv2.waitKey()
+#    cv2.destroyAllWindows()
 
 print("Image 1: ")
 x=input()
