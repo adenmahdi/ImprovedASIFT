@@ -43,11 +43,45 @@ x=input()
 print("Image 2: ")
 y=input()
 img1 = cv2.imread(x,0)
-dst = cv2.Mat();
-// You can try more different parameters
-rect = cv2.Rect(100, 100, 200, 200);
-dst = src.roi(rect);
-img1_1, img1_2, img1_3, img1_4 = cv2.split(img1)
+img1_1=[]
+img2_1=[]
+
+dst = cv2.Mat()
+
+rect = cv2.Rect(0, 0, img1.shape[1]/4, img1.shape[0])
+dst = img1.roi(rect)
+img1_1.add(dst)
+
+rect = cv2.Rect(img1.shape[1]/4, 0, img1.shape[1]/4, img1.shape[0])
+dst = img1.roi(rect)
+img1_1.add(dst)
+
+rect = cv2.Rect(img1.shape[1]/2, 0, img1.shape[1]/4, img1.shape[0])
+dst = img1.roi(rect)
+img1_1.add(dst)
+
+rect = cv2.Rect(3*img1.shape[1]/4, 0, img1.shape[1]/4, img1.shape[0])
+dst = img1.roi(rect)
+img1_1.add(dst)
+
 img2 = cv2.imread(y,0)
-img1_1, img1_2, img1_3, img1_4 = cv2.split(img1)
-ASIFT(img1, img2)
+
+rect = cv2.Rect(0, 0, img2.shape[1]/4, img2.shape[0])
+dst = img2.roi(rect)
+img2_1.add(dst)
+
+rect = cv2.Rect(img2.shape[1]/4, 0, img2.shape[1]/4, img2.shape[0])
+dst = img2.roi(rect)
+img2_1.add(dst)
+
+rect = cv2.Rect(img2.shape[1]/2, 0, img2.shape[1]/4, img2.shape[0])
+dst = img2.roi(rect)
+img2_1.add(dst)
+
+rect = cv2.Rect(3*img2.shape[1]/4, 0, img2.shape[1]/4, img2.shape[0])
+dst = img2.roi(rect)
+img2_1.add(dst)
+
+for (x in img1_1):
+	for (y in img2_1):
+		ASIFT(x,y)
