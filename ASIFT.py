@@ -88,7 +88,7 @@ y=input()
 img1 = cv2.imread(x,0)
 img1_1=[]
 img2_1=[]
-image_call(x,y,img1_1,img2_1)
+image_call(x,y,img1, img2, img1_1,img2_1)
 total_matches=[]
 
 for (x in img1_1):
