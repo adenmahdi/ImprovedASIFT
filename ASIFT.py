@@ -98,4 +98,3 @@ for (x in img1_1):
 		if (len(matches)>num_matches):
 			final=matches
 			num_matches=len(matches)
-	total_matches
