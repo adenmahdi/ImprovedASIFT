@@ -6,11 +6,11 @@ from scipy.spatial import cKDTree
 import Equirec2Perspec as E2P
 import math
 
-pan1 = cv2.imread('C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\IMG8352.jpg')
-panumpyath1 = "C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\IMG8352.jpg"
+pan1 = cv2.imread('C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\IMG8362.jpg')
+panumpyath1 = "C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\IMG8362.jpg"
 
-pan2 = cv2.imread("C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\IMG8354.jpg")
-panumpyath2 = "C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\IMG8354.jpg"
+pan2 = cv2.imread("C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\IMG8363.jpg")
+panumpyath2 = "C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\IMG8363.jpg"
 
 def sift_alg(img1, img2):
 	detector = cv2.SIFT_create()
@@ -20,7 +20,7 @@ def sift_alg(img1, img2):
 	if (len(kp1)==0 or len(kp2)==0):
 		print("No keypoints detected.")
 		return [],[],[]
-	bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=False)
+	bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)
 
 	matches = bf.match(des1,des2)
 
@@ -52,10 +52,10 @@ def ImgPointsToPanoramaPoints(panaramaImg, imagePlace, kp):
 	
 	increment =720/2#images are 720 by 1080 but increments are 50% in order for neighbors to share objects
 	zeroPlace = panaramaImg.shape[1]/2 - increment#first image center is panorama center
-	imageStartPoint = (imagePlace*increment+zeroPlace)%panaramaImg.shape[1]
+	imageStartPoint = imagePlace*increment*2+zeroPlace
 	minYshift = (panaramaImg.shape[0]-1080)/2 +math.floor(panaramaImg.shape[0]/20)
 	for i in range(len(kp)):
-		kp[i].pt=(kp[i].pt[0]+imageStartPoint, kp[i].pt[1]+minYshift)
+		kp[i].pt=((kp[i].pt[0]+imageStartPoint)%panaramaImg.shape[1], kp[i].pt[1]+minYshift)
 	return kp
 
 
@@ -98,9 +98,11 @@ img3=255*numpy.ones(shape=[512, 512, 3], dtype=numpy.uint8)
 #cv2.imwrite("C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\Output.jpg", img3)
 
 y=min(len(splitImage1), len(splitImage2))
+total_matches_ASIFT=0
 
 for x in range(y):
     matches, kp1, kp2=ASIFT(splitImage1[x],splitImage2[x])
+    total_matches_ASIFT=len(matches)+total_matches_ASIFT
     if (len(matches)==0):
         continue
     else:
@@ -110,3 +112,5 @@ for x in range(y):
         img3=cv2.drawMatches(pan1,kp1,pan2,kp2,matches, img3)
         cv2.imwrite("C:\\Users\\matty\\Downloads\\ImprovedASIFT-main\\ImprovedASIFT-main\\Output"+str(x)+".jpg", img3)
         img3=255*numpy.ones(shape=[512, 512, 3], dtype=numpy.uint8)
+
+print("Total ASIFT Matches: "+str(total_matches_ASIFT))
